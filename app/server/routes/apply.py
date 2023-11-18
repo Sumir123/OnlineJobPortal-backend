@@ -1,7 +1,6 @@
 import mimetypes
 import os
 from math import ceil
-from typing import List
 import bson
 from bson.objectid import ObjectId
 from fastapi import (APIRouter, Depends, File, HTTPException, Query, Response,
@@ -9,7 +8,6 @@ from fastapi import (APIRouter, Depends, File, HTTPException, Query, Response,
 from fastapi.responses import StreamingResponse
 from server.auth.auth import RoleChecker, UserRole
 from server.config.db import db
-from server.models.application import Application
 from server.models.user import User
 from server.routes.user import get_current_user
 
