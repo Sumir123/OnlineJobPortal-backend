@@ -4,7 +4,7 @@ from urllib.parse import quote_plus, quote
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
 mongodb_url = os.getenv("MONGODB_URL")
 

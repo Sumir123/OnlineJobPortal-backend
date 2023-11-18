@@ -1,0 +1,11 @@
+uvicorn==*
+bcrypt==*
+python-dotenv==*
+pyjwt==*
+pydantic[email]==*
+fastapi[all]==*
+passlib==*
+python-jose==*
+pymongo==*
+pandas==*
+scikit-learn==*
