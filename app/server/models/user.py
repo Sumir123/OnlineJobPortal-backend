@@ -9,7 +9,7 @@ class User(BaseModel):
     email: str = Field(..., description="Email address")
     password: str = Field(..., description="Password")
     role: str = Field(..., description="User role",
-                      regex="^(employer|jobseeker|admin)$")
+                      pattern="^(employer|jobseeker|admin)$")
 
 
 class UserProfile(BaseModel):
