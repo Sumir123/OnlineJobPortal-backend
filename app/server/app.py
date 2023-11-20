@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 from server.routes.apply import apply_router
 from server.routes.category import category_router
 from server.routes.jobs import job_router

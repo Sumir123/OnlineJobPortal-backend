@@ -2,6 +2,7 @@ import os
 from enum import Enum
 from fastapi import HTTPException, Request, status
 from jose import jwt
+from typing import List
 from server.config.db import db
 from server.models.user import User
 
@@ -16,7 +17,7 @@ class UserRole(str, Enum):
 
 
 class RoleChecker:
-    def __init__(self, allowed_roles: list[UserRole]):
+    def __init__(self, allowed_roles: List[UserRole]):
         self.allowed_roles = allowed_roles
 
     def __call__(self, request: Request):
