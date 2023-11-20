@@ -16,6 +16,9 @@ pymongo = "*"
 pandas = "*"
 scikit-learn = "*"
 
+[scripts]
+start = "python app/main.py"
+
 [dev-packages]
 
 [requires]
