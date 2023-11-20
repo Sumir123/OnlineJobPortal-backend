@@ -15,22 +15,24 @@ async def create_category(category: Category):
 
 @category_router.get("/categories")
 async def get_all_categories():
-    categories = list(db.categories.find())
+    categories = list(db.categories.find({}, {"name": 1, "other_field": 1}))
 
-    category_list = []
+    category_names = [category["name"] for category in categories]
+
+    job_counts = db.jobs.aggregate([
+        {"$match": {"category": {"$in": category_names}}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ])
+
+    job_count_dict = {entry["_id"]: entry["count"] for entry in job_counts}
+
     for category in categories:
-        category["_id"] = str(category["_id"])
+        category["_id"] = str(category["_id"]) 
+        category["job_count"] = job_count_dict.get(category["name"], 0)
 
-        # Retrieve the count of jobs for the category
-        job_count = db.jobs.count_documents({"category": category["name"]})
-        category["job_count"] = job_count
-
-        category_list.append(category)
-
-    sorted_categories = sorted(category_list, key=lambda x: x["name"])
+    sorted_categories = sorted(categories, key=lambda x: x["name"])
 
     return sorted_categories
-
 
 @category_router.put("/categories/{category_id}")
 async def update_category(category_id: str, category: Category):
