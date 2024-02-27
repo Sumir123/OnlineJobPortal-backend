@@ -10,7 +10,7 @@ mongodb_url = os.getenv("MONGODB_URL")
 
 # Create a new client and connect to the server
 conn = MongoClient(mongodb_url, server_api=ServerApi('1'))
-db = conn["rojgar-db"]
+db = conn["rojgar-db"]  
 # Send a ping to confirm a successful connection
 try:
     conn.admin.command('ping')

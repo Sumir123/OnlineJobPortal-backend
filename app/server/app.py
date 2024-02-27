@@ -7,6 +7,7 @@ from server.routes.recomend import recommendation_router
 from server.routes.user import user
 from server.routes.userProfileRoute import user_profile_router
 
+from fastapi.responses import HTMLResponse
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +24,27 @@ app.include_router(recommendation_router, prefix="/api",
                    tags=["Recommendation"])
 app.include_router(category_router, prefix="/api", tags=["Category"])
 app.include_router(user_profile_router, prefix="/api", tags=["UserProfile"])
+
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    return """
+    <html>
+        <head>
+            <title>Rojgar</title>
+        </head>
+        <body style='    
+        display: flex;
+        height: -webkit-fill-available;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        '>
+        <h1>Welcome To Rojgar Backend</h1><br>
+            <a href='/docs'>Go to Docs</a>
+        </body>
+    </html>
+    """
+
 
 # Swagger UI group
 app.title = "My API Documentation"

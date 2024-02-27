@@ -16,6 +16,7 @@ load_dotenv()
 
 user = APIRouter()
 user_collection = db["users"]
+user_profile_collection = db["user_profiles"]
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -100,7 +101,7 @@ async def get_current_user(response: Response, request: Request):
                 user["_id"] = str(user["_id"])  # Convert ObjectId to string
 
                 # Check if the user profile exists
-                user_profile = db.user_profiles.find_one(
+                user_profile = user_profile_collection.find_one(
                     {"user_id": user["_id"]})
                 if user_profile:
                     # Remove the "disabled" field if it exists
@@ -138,26 +139,37 @@ async def get_all_users():
 
     return users
 
-
 @user.get("/users/{user_id}")
-async def get_user(user_id: str):
-    user = user_collection.find_one({"_id": ObjectId(user_id)})
+async def get_user_by_id(user_id: str):
+    try:
+        user_pipeline = [
+            {"$match": {"_id": ObjectId(user_id)}},
+            {"$project": {"password": 0}},
+        ]
+        user = list(user_collection.aggregate(user_pipeline))
 
-    if user:
-        # Remove sensitive information like password before returning the user data
-        user.pop("password", None)
-        user["_id"] = str(user["_id"])  # Convert ObjectId to string
+        if user:
+            user = user[0]  # Take the first element, as it's a list due to aggregation
+            user["_id"] = str(user["_id"])
 
-        # Get the user profile information
-        user_profile = db.user_profiles.find_one({"user_id": user_id})
-        if user_profile:
-            user_profile["_id"] = str(user_profile["_id"])
-            user["profile"] = user_profile
+            # Use $lookup to combine user and user profile data
+            profile_pipeline = [
+                {"$match": {"user_id": user_id}},
+                {"$project": {"_id": 0}},
+            ]
+            user_profile = list(user_profile_collection.aggregate(profile_pipeline))
 
+            if user_profile:
+                user["profile"] = user_profile[0]  # Take the first element, as it's a list due to aggregation
 
-        return user
-    else:
+            return user
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="User not found",
         )
